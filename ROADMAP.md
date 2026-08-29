@@ -12,6 +12,8 @@ Given a movie (or at least its subtitles), produce a **clean transcript** you ca
 
 The product is a personal film notebook, not a subtitle editor.
 
+**Now:** an all-browser web app (Vite + React, IndexedDB). No server. See [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ---
 
 ## Inputs
@@ -69,6 +71,8 @@ Make "get an SRT" less of a scavenger hunt.
 - Import the chosen file through the same path as Step 1.
 
 If subtitle-provider APIs, auth, or legality make this painful: **punt and keep Step 1**. Search is convenience, not the core loop.
+
+**Status:** Planned — see [docs/PLAN-subtitle-search.md](docs/PLAN-subtitle-search.md). TMDB for movie search + OpenSubtitles via a small proxy (CORS/auth). Manual import stays.
 
 **Done when:** pick a film → pick an SRT → same parsed-cue state as a manual import. If blocked, document why and skip.
 
@@ -137,10 +141,10 @@ Can start as a thin data model even before the viewer exists (manual "I watched 
 
 ```
 Now
-  Activity 1.1  Import SRT, parse cues
-  Activity 1.2  Movie + SRT search          (punt if providers fight us)
-  Activity 1.3  Generate clean transcript
-  Follow-on     Export to Readwise
+  Activity 1.1  Import SRT, parse cues              [done]
+  Activity 1.2  Movie + SRT search                  [planned — see docs/PLAN-subtitle-search.md]
+  Activity 1.3  Generate clean transcript           [done]
+  Follow-on     Export to Readwise                  [files you can paste; no API yet]
 
 When movie files are easy
   Activity 2    Synced video + transcript viewer
@@ -166,11 +170,11 @@ Anytime after 1.3 / when video exists
 
 ## Open questions
 
-- **App vs. script:** Activity 1 can start as a local web app or a CLI; a UI is needed by Step 3 ("Generate transcript") and for later viewing. Prefer a small local app over a one-shot script if we're heading toward Activity 2.
-- **Where data lives:** local-first files vs. a small database. Structured cues + transcript + (later) people/watches argue for a real store, not only exported Markdown.
-- **SDH default:** keep stage directions, drop them, or make it a generate-time toggle?
-- **Scene breaks:** infer from time gaps, or leave as a continuous script until we have chapter/scene metadata?
-- **Subtitle search legality and TOS:** which index (if any) we're willing to call; whether search is "open this URL" vs. in-app download.
-- **Readwise path:** Reader import vs. highlight API vs. "copy Markdown and paste."
+- **App vs. script:** Decided — all-browser Vite app (see [ARCHITECTURE.md](ARCHITECTURE.md)). Optional Tauri wrapper later if we want a window/EXE around this UI.
+- **Where data lives:** IndexedDB in this browser profile. Exports (Markdown / text / timed JSON) are the portable copy. File System Access / library backup can wait.
+- **SDH default:** Include stage directions, with a generate-time toggle to drop them.
+- **Scene breaks:** Time-gap threshold (`gapMsForParagraph`, default 1500ms) prevents merging across pauses. No named scenes until we have chapter metadata.
+- **Subtitle search legality and TOS:** which index (if any) we're willing to call; whether search is "open this URL" vs. in-app download. Blocked in-browser by CORS for now.
+- **Readwise path:** Reader import vs. highlight API vs. "copy Markdown and paste." Current path: download Markdown.
 - **Person identity:** Google Contacts as source of truth, or our own list that can *link* to a contact?
 - **tk421 fidelity:** full scene pages with many stills, or a sparser "keyframe per beat" illustrated export?
