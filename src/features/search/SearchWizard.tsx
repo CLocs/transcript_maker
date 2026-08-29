@@ -18,6 +18,7 @@ export function SearchWizard({ onClose, onFilmSelected }: Props) {
   const [selectedFilm, setSelectedFilm] = useState<MovieSearchHit | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const subtitleListRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -73,18 +74,26 @@ export function SearchWizard({ onClose, onFilmSelected }: Props) {
   const activeIndex = step === "film" ? filmNav.activeIndex : subtitleNav.activeIndex;
 
   useEffect(() => {
+    if (activeIndex < 0) return;
     itemRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" });
   }, [activeIndex]);
 
   useEffect(() => {
+    if (step === "subtitles") {
+      modalRef.current?.scrollTo({ top: 0 });
+    }
+  }, [step]);
+
+  useEffect(() => {
     if (step === "subtitles" && subtitles.length > 0 && !subtitlesLoading) {
-      subtitleListRef.current?.focus();
+      subtitleListRef.current?.focus({ preventScroll: true });
     }
   }, [step, subtitles.length, subtitlesLoading]);
 
   return (
     <div className="modal-backdrop" onClick={onClose} role="presentation">
       <div
+        ref={modalRef}
         className="modal"
         role="dialog"
         aria-labelledby="search-wizard-title"
