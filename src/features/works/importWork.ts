@@ -20,6 +20,8 @@ export async function importSubtitleFile(file: File): Promise<string> {
     importedAt: Date.now(),
     cues,
     transcript: null,
+    film: null,
+    subtitleSource: { provider: "manual" },
   };
 
   await db.works.add(work);

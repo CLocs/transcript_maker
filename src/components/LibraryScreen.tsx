@@ -6,6 +6,7 @@ type Props = {
   importNonce: number;
   importError: string | null;
   onImport: () => void;
+  onFindSubtitles: () => void;
   onOpen: (id: string) => void;
 };
 
@@ -16,7 +17,13 @@ function formatDate(ms: number): string {
   });
 }
 
-export function LibraryScreen({ importNonce, importError, onImport, onOpen }: Props) {
+export function LibraryScreen({
+  importNonce,
+  importError,
+  onImport,
+  onFindSubtitles,
+  onOpen,
+}: Props) {
   const [works, setWorks] = useState<Work[]>([]);
 
   useEffect(() => {
@@ -38,9 +45,14 @@ export function LibraryScreen({ importNonce, importError, onImport, onOpen }: Pr
             Everything stays in this browser profile. Clearing site data deletes the library.
           </p>
         </div>
-        <button type="button" className="btn" onClick={onImport}>
-          Import SRT
-        </button>
+        <div className="row library-actions">
+          <button type="button" className="btn btn-secondary" onClick={onFindSubtitles}>
+            Find film
+          </button>
+          <button type="button" className="btn" onClick={onImport}>
+            Import SRT
+          </button>
+        </div>
       </header>
 
       {importError ? <p className="error">{importError}</p> : null}
@@ -54,7 +66,11 @@ export function LibraryScreen({ importNonce, importError, onImport, onOpen }: Pr
               <button type="button" className="work-open" onClick={() => onOpen(work.id)}>
                 <strong>{work.title}</strong>
                 <span className="work-meta">
-                  {work.sourceFilename} · {work.cues.length} cues · {formatDate(work.importedAt)}
+                  {work.film
+                    ? `TMDB · ${work.cues.length ? `${work.cues.length} cues` : "no subtitles yet"}`
+                    : `${work.sourceFilename} · ${work.cues.length} cues`}
+                  {" · "}
+                  {formatDate(work.importedAt)}
                   {work.transcript ? " · transcript ready" : ""}
                 </span>
               </button>

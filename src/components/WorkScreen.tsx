@@ -58,6 +58,7 @@ export function WorkScreen({ workId, onBack, onMissing }: Props) {
   }
 
   async function generate() {
+    if (current.cues.length === 0) return;
     const title = titleDraft.trim() || current.title;
     const blocks = generateTranscript(current.cues, options);
     await saveWork({
@@ -96,7 +97,12 @@ export function WorkScreen({ workId, onBack, onMissing }: Props) {
           aria-label="Title"
         />
         <div className="row">
-          <button type="button" className="btn btn-accent" onClick={() => void generate()}>
+          <button
+            type="button"
+            className="btn btn-accent"
+            disabled={work.cues.length === 0}
+            onClick={() => void generate()}
+          >
             Generate transcript
           </button>
           <button
@@ -167,17 +173,33 @@ export function WorkScreen({ workId, onBack, onMissing }: Props) {
           </label>
         </div>
         <p className="work-meta">
-          {work.sourceFilename} · {work.cues.length} cues
+          {work.film ? (
+            <>
+              TMDB #{work.film.tmdbId}
+              {work.film.year ? ` · ${work.film.year}` : ""}
+              {" · "}
+            </>
+          ) : null}
+          {work.sourceFilename}
+          {work.cues.length > 0 ? ` · ${work.cues.length} cues` : " · no subtitles yet"}
           {transcript
             ? ` · ${transcript.blocks.length} transcript blocks`
-            : " · no transcript yet"}
+            : work.cues.length > 0
+              ? " · no transcript yet"
+              : ""}
         </p>
       </header>
 
       <div className="panes">
         <section className="pane">
           <h2>Raw cues</h2>
-          <table className="cue-table">
+          {work.cues.length === 0 ? (
+            <p className="placeholder">
+              No subtitle file yet. Use <strong>Import SRT</strong> from the library, or wait for
+              Phase B to download subtitles from OpenSubtitles.
+            </p>
+          ) : (
+            <table className="cue-table">
             <thead>
               <tr>
                 <th>#</th>
@@ -195,6 +217,7 @@ export function WorkScreen({ workId, onBack, onMissing }: Props) {
               ))}
             </tbody>
           </table>
+          )}
         </section>
 
         <section className="pane">

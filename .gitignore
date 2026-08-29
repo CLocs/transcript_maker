@@ -1,6 +1,12 @@
 node_modules
 dist
+.vite
 .DS_Store
 *.local
+.env
+.env.*
+!.env.example
+proxy/.dev.vars
+proxy/.wrangler
 tsconfig.app.tsbuildinfo
 tsconfig.node.tsbuildinfo

@@ -147,10 +147,10 @@ src/
 
 ### Phase A — Proxy skeleton + TMDB search (no download yet)
 
-- [ ] Scaffold `proxy/` with Wrangler
-- [ ] `GET /api/movies/search`
-- [ ] Vite dev proxy + `.env.example`
-- [ ] `SearchWizard` step 1 only; selecting a film stores metadata on a new work (or attaches to pending import)
+- [x] Scaffold `proxy/` with Wrangler
+- [x] `GET /api/movies/search`
+- [x] Vite dev proxy + `.dev.vars.example`
+- [x] `SearchWizard` step 1 only; selecting a film stores metadata on a new work
 
 **Done when:** you can search “Great Escape”, see results, pick one.
 

@@ -1,0 +1,6 @@
+name = "transcript-maker-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-08-01"
+
+[dev]
+port = 8787
