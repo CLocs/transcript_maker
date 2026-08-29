@@ -26,6 +26,20 @@ export type GeneratedTranscript = {
   blocks: TranscriptBlock[];
 };
 
+export type FilmIdentity = {
+  tmdbId: number;
+  title: string;
+  year?: number;
+  posterUrl?: string;
+};
+
+export type SubtitleSource = {
+  provider: "opensubtitles" | "manual";
+  fileId?: string;
+  language?: string;
+  release?: string;
+};
+
 export type Work = {
   id: string;
   title: string;
@@ -33,6 +47,8 @@ export type Work = {
   importedAt: number;
   cues: Cue[];
   transcript: GeneratedTranscript | null;
+  film?: FilmIdentity | null;
+  subtitleSource?: SubtitleSource | null;
 };
 
 export const defaultCleanOptions: CleanOptions = {

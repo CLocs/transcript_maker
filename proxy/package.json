@@ -1,0 +1,18 @@
+{
+  "name": "transcript-maker-proxy",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/cleanup-dev.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260829.1",
+    "fflate": "^0.8.2",
+    "kill-port": "^2.0.1",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.33.0"
+  }
+}

@@ -147,20 +147,20 @@ src/
 
 ### Phase A — Proxy skeleton + TMDB search (no download yet)
 
-- [ ] Scaffold `proxy/` with Wrangler
-- [ ] `GET /api/movies/search`
-- [ ] Vite dev proxy + `.env.example`
-- [ ] `SearchWizard` step 1 only; selecting a film stores metadata on a new work (or attaches to pending import)
+- [x] Scaffold `proxy/` with Wrangler
+- [x] `GET /api/movies/search`
+- [x] Vite dev proxy + `.dev.vars.example`
+- [x] `SearchWizard` step 1 only; selecting a film stores metadata on a new work
 
 **Done when:** you can search “Great Escape”, see results, pick one.
 
 ### Phase B — OpenSubtitles search + download
 
-- [ ] OpenSubtitles auth helper in proxy (API key + optional login)
-- [ ] `GET /api/subtitles/search`
-- [ ] `GET /api/subtitles/download` → returns SRT text
-- [ ] Wire wizard step 2 → import through existing `importWork` path
-- [ ] Error handling + loading states
+- [x] OpenSubtitles auth helper in proxy (API key + login)
+- [x] `GET /api/subtitles/search`
+- [x] `GET /api/subtitles/download` → returns SRT text
+- [x] Wire wizard step 2 → import through existing parse/import path
+- [x] Error handling + loading states
 
 **Done when:** pick film → pick subtitle → land on work screen with parsed cues (same as manual import).
 

@@ -1,10 +1,12 @@
 import { useCallback, useRef, useState } from "react";
 import { LibraryScreen } from "../components/LibraryScreen";
 import { WorkScreen } from "../components/WorkScreen";
+import { SearchWizard } from "../features/search/SearchWizard";
 import { importSubtitleFile } from "../features/works/importWork";
 
 export default function App() {
   const [workId, setWorkId] = useState<string | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importNonce, setImportNonce] = useState(0);
@@ -13,7 +15,14 @@ export default function App() {
     fileRef.current?.click();
   }, []);
 
-  const goLibrary = useCallback(() => setWorkId(null), []);
+  const goLibrary = useCallback(() => {
+    setWorkId(null);
+    setShowSearch(false);
+  }, []);
+
+  const refreshLibrary = useCallback(() => {
+    setImportNonce((n) => n + 1);
+  }, []);
 
   return (
     <div className="app-shell">
@@ -29,7 +38,7 @@ export default function App() {
           setImportError(null);
           try {
             const id = await importSubtitleFile(file);
-            setImportNonce((n) => n + 1);
+            refreshLibrary();
             setWorkId(id);
           } catch (err) {
             setImportError(err instanceof Error ? err.message : "Could not import that file.");
@@ -43,9 +52,20 @@ export default function App() {
           importNonce={importNonce}
           importError={importError}
           onImport={openPicker}
+          onFindSubtitles={() => setShowSearch(true)}
           onOpen={setWorkId}
         />
       )}
+      {showSearch ? (
+        <SearchWizard
+          onClose={() => setShowSearch(false)}
+          onFilmSelected={(id) => {
+            refreshLibrary();
+            setShowSearch(false);
+            setWorkId(id);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

@@ -1,0 +1,6 @@
+# Copy to .dev.vars and fill in. Never commit .dev.vars.
+TMDB_API_KEY=
+
+# OPENSUBTITLES_API_KEY=
+OPENSUBTITLES_USERNAME=
+OPENSUBTITLES_PASSWORD=

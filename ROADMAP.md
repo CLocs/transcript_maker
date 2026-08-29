@@ -142,7 +142,7 @@ Can start as a thin data model even before the viewer exists (manual "I watched 
 ```
 Now
   Activity 1.1  Import SRT, parse cues              [done]
-  Activity 1.2  Movie + SRT search                  [planned — see docs/PLAN-subtitle-search.md]
+  Activity 1.2  Movie + SRT search                  [done — TMDB + OpenSubtitles via proxy]
   Activity 1.3  Generate clean transcript           [done]
   Follow-on     Export to Readwise                  [files you can paste; no API yet]
 
