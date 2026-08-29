@@ -12,20 +12,20 @@ export function exportBasename(title: string): string {
   return slug(title);
 }
 
-/** Escape a line so Markdown parsers (Readwise, etc.) don't treat it as a list item. */
-function escapeMarkdownLine(line: string): string {
-  if (/^[-+*]\s/.test(line)) {
-    return `\\${line}`;
-  }
-  if (/^\d+\.\s/.test(line)) {
-    return line.replace(/^(\d+)\.\s/, "$1\\. ");
-  }
-  return line;
+/** Strip leading speaker dashes (`- dialogue`) so exports read as plain lines. */
+export function stripSpeakerDash(line: string): string {
+  return line.replace(/^[-–—]\s+/, "");
+}
+
+function formatBlockForReading(text: string): string {
+  return text
+    .split("\n")
+    .map((line) => stripSpeakerDash(line))
+    .join("\n");
 }
 
 function blockToMarkdownParagraph(text: string, kind: "dialogue" | "sdh"): string {
-  const lines = text.split("\n").map(escapeMarkdownLine);
-  const body = lines.join("\n");
+  const body = formatBlockForReading(text);
   return kind === "sdh" ? `_${body}_` : body;
 }
 
@@ -37,7 +37,7 @@ export function transcriptToMarkdown(title: string, transcript: GeneratedTranscr
 }
 
 export function transcriptToPlainText(title: string, transcript: GeneratedTranscript): string {
-  const body = transcript.blocks.map((block) => block.text).join("\n\n");
+  const body = transcript.blocks.map((block) => formatBlockForReading(block.text)).join("\n\n");
   return `${title}\n\n${body}\n`;
 }
 

@@ -72,7 +72,7 @@ Make "get an SRT" less of a scavenger hunt.
 
 If subtitle-provider APIs, auth, or legality make this painful: **punt and keep Step 1**. Search is convenience, not the core loop.
 
-**Status:** Punted for the all-browser app. Most subtitle indexes block browser CORS; in-app search would need a proxy. Manual import (Step 1) is the path.
+**Status:** Planned — see [docs/PLAN-subtitle-search.md](docs/PLAN-subtitle-search.md). TMDB for movie search + OpenSubtitles via a small proxy (CORS/auth). Manual import stays.
 
 **Done when:** pick a film → pick an SRT → same parsed-cue state as a manual import. If blocked, document why and skip.
 
@@ -142,7 +142,7 @@ Can start as a thin data model even before the viewer exists (manual "I watched 
 ```
 Now
   Activity 1.1  Import SRT, parse cues              [done]
-  Activity 1.2  Movie + SRT search                  [punted — CORS; keep manual import]
+  Activity 1.2  Movie + SRT search                  [planned — see docs/PLAN-subtitle-search.md]
   Activity 1.3  Generate clean transcript           [done]
   Follow-on     Export to Readwise                  [files you can paste; no API yet]
 
