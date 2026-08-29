@@ -156,11 +156,11 @@ src/
 
 ### Phase B — OpenSubtitles search + download
 
-- [ ] OpenSubtitles auth helper in proxy (API key + optional login)
-- [ ] `GET /api/subtitles/search`
-- [ ] `GET /api/subtitles/download` → returns SRT text
-- [ ] Wire wizard step 2 → import through existing `importWork` path
-- [ ] Error handling + loading states
+- [x] OpenSubtitles auth helper in proxy (API key + login)
+- [x] `GET /api/subtitles/search`
+- [x] `GET /api/subtitles/download` → returns SRT text
+- [x] Wire wizard step 2 → import through existing parse/import path
+- [x] Error handling + loading states
 
 **Done when:** pick film → pick subtitle → land on work screen with parsed cues (same as manual import).
 

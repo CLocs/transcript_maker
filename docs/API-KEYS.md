@@ -40,12 +40,14 @@ Do this now if you like; the app won’t use it until Phase B.
 
 OpenSubtitles also requires a `User-Agent` header identifying your app; the proxy sets this automatically.
 
-Optional for Phase B downloads: if the API requires a logged-in user, add your OpenSubtitles username and password to `.dev.vars`:
+**Downloads require your OpenSubtitles account login** (not just the API key). Add to `proxy/.dev.vars`:
 
 ```
 OPENSUBTITLES_USERNAME=your_username
 OPENSUBTITLES_PASSWORD=your_password
 ```
+
+Use the same username and password you use at [opensubtitles.com](https://www.opensubtitles.com). Free accounts get ~20 downloads per day.
 
 ## Local file
 
@@ -67,7 +69,7 @@ cp .dev.vars.example .dev.vars
    ```
    http://localhost:8787/api/health
    ```
-   Response should be `{"ok":true,"tmdb":true}`.
+   Response should be `{"ok":true,"tmdb":true,"opensubtitles":{"apiKey":true,"loginConfigured":true}}`.
 4. Try a search in the app: **Find film** → e.g. “great escape”.
 
 ## Troubleshooting

@@ -180,7 +180,9 @@ export function WorkScreen({ workId, onBack, onMissing }: Props) {
               {" · "}
             </>
           ) : null}
-          {work.sourceFilename}
+          {work.subtitleSource?.provider === "opensubtitles"
+            ? `OpenSubtitles · ${work.sourceFilename}`
+            : work.sourceFilename}
           {work.cues.length > 0 ? ` · ${work.cues.length} cues` : " · no subtitles yet"}
           {transcript
             ? ` · ${transcript.blocks.length} transcript blocks`
@@ -195,8 +197,8 @@ export function WorkScreen({ workId, onBack, onMissing }: Props) {
           <h2>Raw cues</h2>
           {work.cues.length === 0 ? (
             <p className="placeholder">
-              No subtitle file yet. Use <strong>Import SRT</strong> from the library, or wait for
-              Phase B to download subtitles from OpenSubtitles.
+              No subtitle file yet. Use <strong>Find film</strong> to download from OpenSubtitles, or{" "}
+              <strong>Import SRT</strong> from the library.
             </p>
           ) : (
             <table className="cue-table">

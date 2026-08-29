@@ -1,5 +1,6 @@
 import { corsHeaders, errorResponse, jsonResponse } from "./cors";
 import type { Env } from "./env";
+import { downloadSubtitle, opensubtitlesStatus, searchSubtitles } from "./opensubtitles";
 import { searchMovies } from "./tmdb";
 
 export default {
@@ -14,6 +15,7 @@ export default {
       return jsonResponse(request, {
         ok: true,
         tmdb: Boolean(env.TMDB_API_KEY),
+        opensubtitles: opensubtitlesStatus(env),
       });
     }
 
@@ -27,6 +29,35 @@ export default {
         return jsonResponse(request, { results });
       } catch (err) {
         const message = err instanceof Error ? err.message : "Movie search failed.";
+        return errorResponse(request, message, 502);
+      }
+    }
+
+    if (url.pathname === "/api/subtitles/search" && request.method === "GET") {
+      const tmdbId = Number(url.searchParams.get("tmdb_id"));
+      const language = url.searchParams.get("lang")?.trim() || "en";
+      if (!Number.isFinite(tmdbId) || tmdbId <= 0) {
+        return errorResponse(request, "tmdb_id is required.", 400);
+      }
+      try {
+        const results = await searchSubtitles(tmdbId, language, env);
+        return jsonResponse(request, { results });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Subtitle search failed.";
+        return errorResponse(request, message, 502);
+      }
+    }
+
+    if (url.pathname === "/api/subtitles/download" && request.method === "GET") {
+      const fileId = Number(url.searchParams.get("file_id"));
+      if (!Number.isFinite(fileId) || fileId <= 0) {
+        return errorResponse(request, "file_id is required.", 400);
+      }
+      try {
+        const { text, fileName } = await downloadSubtitle(fileId, env);
+        return jsonResponse(request, { text, fileName });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Subtitle download failed.";
         return errorResponse(request, message, 502);
       }
     }

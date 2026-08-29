@@ -1,7 +1,6 @@
 # Copy to .dev.vars and fill in. Never commit .dev.vars.
 TMDB_API_KEY=
 
-# Phase B — subtitle search/download (optional for now)
 # OPENSUBTITLES_API_KEY=
-# OPENSUBTITLES_USERNAME=
-# OPENSUBTITLES_PASSWORD=
+OPENSUBTITLES_USERNAME=
+OPENSUBTITLES_PASSWORD=
