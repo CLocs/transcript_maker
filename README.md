@@ -19,7 +19,7 @@ Your works are saved automatically in this browser profile. Clearing site data f
 
 ### Library screen
 
-<!-- screenshot: library with Import SRT and Find film buttons -->
+![Library with Import SRT and Find film buttons](images/transcript-maker-library.png)
 
 From the library you can:
 
@@ -48,9 +48,9 @@ Best when you want the app to fetch subtitles for you.
 4. The app imports the file and opens the work.
 5. Click **Generate transcript**, then export.
 
-<!-- screenshot: Find film search results -->
+![Find film search results](images/transcript-maker-find-a-film.png)
 
-<!-- screenshot: subtitle picker -->
+![Subtitle picker](images/transcript-maker-pick-a-subtitle.png)
 
 If no subtitles appear, use **Import SRT** with a file from [OpenSubtitles](https://www.opensubtitles.com) instead.
 
@@ -58,7 +58,7 @@ If no subtitles appear, use **Import SRT** with a file from [OpenSubtitles](http
 
 ### Work screen
 
-<!-- screenshot: work screen with raw cues and transcript panes -->
+![Work screen with raw cues and transcript panes](images/transcript-maker-great-escape.png)
 
 | Area | What it does |
 | --- | --- |
