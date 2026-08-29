@@ -182,3 +182,5 @@ More detail: [ARCHITECTURE.md](ARCHITECTURE.md).
 ### Deploy
 
 `npm run build` produces a static site in `dist/`. Deploy the `proxy/` worker separately (e.g. Cloudflare Workers) and set `VITE_API_BASE_URL` to its URL at build time.
+
+Phased plan and security notes: [docs/PLAN-deployment.md](docs/PLAN-deployment.md).
