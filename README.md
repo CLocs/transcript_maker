@@ -82,7 +82,7 @@ After you generate a transcript, click **Watch / highlight**.
 1. Read the full transcript while the movie plays elsewhere.
 2. Select text → **Save highlight**, press **Ctrl+H** (⌘H on Mac), or **right-click → Highlight selection**. Highlights stay with the work in this browser.
 3. **Sync up** — listens on the mic for ~10 seconds, then scrolls to the best-matching line. Not continuous listening.
-4. **Push to Readwise** — paste your [access token](https://readwise.io/access_token) once (**Readwise token** → Save token). It is kept in this browser’s `localStorage` for later Watch sessions. Then push saved highlights.
+4. **Push to Readwise** — paste your [access token](https://readwise.io/access_token) once (**Readwise token** → Save token). It is kept in this browser’s `localStorage` for later Watch sessions. Then push saved highlights; they show up in your [Readwise library](https://readwise.io/library) (classic highlights / review — not [Readwise Reader](https://readwise.io/read)).
 
 You can still **Export Markdown** from the work screen if you prefer importing a file into Reader.
 
