@@ -1,6 +1,6 @@
 # Portable build + companion watch mode
 
-Part A (standalone HTML) is implemented. Part B (highlights + Sync up) is not started.
+Part A (standalone HTML) and Part B (Watch mode) are implemented.
 
 See also: [PLAN-deployment.md](PLAN-deployment.md), [ROADMAP.md](../ROADMAP.md), [ARCHITECTURE.md](../ARCHITECTURE.md).
 
@@ -58,85 +58,49 @@ Root Vite has a single HTML entry and no History API routing, so the usual `file
 
 ---
 
-## Part B — Companion: in-app highlight + Sync up
+## Part B — Watch mode (same app)
+
+**Implemented** in this repo as [WatchScreen](../src/components/WatchScreen.tsx). Enter from Work via **Watch / highlight** after a transcript exists.
 
 Complementary to Activity 2 (video file in the browser). Use case: you're watching **elsewhere** (TV / projector) and want the transcript to catch up and support highlighting without fighting Readwise scroll position.
 
-Treat as a **companion mode** (same repo or thin separate app) that consumes the same Work / cues data (or imported MD / timed JSON).
-
-### B1 — Readwise API
-
-Two useful surfaces:
-
-1. **Classic Readwise API** — `POST https://readwise.io/api/v2/highlights/`  
-   Send highlight text + title/author (film name). Best for “select in our app → push to Readwise.”
-
-2. **Reader API** — `POST https://readwise.io/api/v3/save/`  
-   Push the full transcript as a document (`html` or `markdown` + synthetic `url`, e.g. `https://transcript-maker.local#tmdb-5925`). Creating Reader highlights later needs exact HTML fragment matching (fiddlier).
-
-Docs: [Readwise API](https://readwise.io/api_deets), [Reader API](https://readwise.io/reader_api).
-
-**Recommended product shape:**
-
-- Highlight **in our app** (primary UX, especially with Sync up).
-- On demand: **Push to Readwise** (v2 highlights) and/or **Save transcript to Reader** (v3 save).
-- Token: user pastes a Readwise access token locally (or via proxy later) — same secret pattern as TMDB. **Do not** bake the token into a public standalone HTML.
-
-This upgrades the current follow-on (“export Markdown and paste”) to “push from app.”
-
-### B2 — Sync up (mic burst, not continuous)
-
-**Don't run always-on listening.** Continuous STT is heavy on CPU/battery, privacy-sensitive (Chrome often sends audio to cloud unless on-device is available), and noisy with TV + room mic.
-
-**Burst locate flow:**
-
-1. User taps **Sync up**.
-2. Mic listens ~5–15 seconds (`SpeechRecognition` / Web Speech API; prefer `processLocally` where supported).
-3. Stop automatically.
-4. Fuzzy-match heard text against cue / transcript strings (sliding window + score; Fuse.js or DIY n-grams).
-5. Scroll / highlight the best-matching block; user confirms or retries.
-
-```mermaid
-sequenceDiagram
-  participant User
-  participant App as CompanionApp
-  participant Mic as WebSpeechAPI
-  participant Cues as TimedTranscript
-
-  User->>App: Sync up
-  App->>Mic: start 5to15s
-  Mic-->>App: heard text
-  App->>Cues: fuzzy match
-  Cues-->>App: best cue index
-  App->>User: scroll and highlight line
+```
+Library → Work (generate) → Watch (read / highlight / Sync up / push Readwise)
 ```
 
-**Why burst is enough:** matching needs a distinctive phrase, not continuous forced alignment.
+### B1 — Highlights + Readwise
 
-**Hard parts (expect iteration):**
+- Select transcript text → **Save highlight** (stored on `Work.highlights` in IndexedDB).
+- **Readwise token** saved in `localStorage` (this browser only).
+- **Push to Readwise** uses Classic API `POST https://readwise.io/api/v2/highlights/` ([docs](https://readwise.io/api_deets)).
+- Reader v3 “save full document” is not wired yet (Markdown export still works).
 
-- Far-field TV dialogue vs room mic quality
-- Music / SFX / overlapping speech
-- Subtitle wording ≠ spoken wording (SDH, paraphrases)
-- Ambiguous repeats (“Hello?” many times) — bias toward last known position / recent context
+### B2 — Sync up (mic burst)
+
+1. Tap **Sync up**.
+2. Mic listens ~10 seconds (Web Speech API; `processLocally` when available).
+3. Stops automatically.
+4. Fuzzy-matches heard text against transcript blocks ([matchTranscript.ts](../src/lib/watch/matchTranscript.ts)).
+5. Scrolls to the best-matching block.
+
+**Hard parts (expect iteration):** far-field TV audio, SFX, subtitle ≠ spoken wording, repeated phrases (soft prior toward last sync position).
 
 ### Relation to Activity 2
 
 | Mode | Sync source | Needs movie file? |
 | --- | --- | --- |
-| **Sync up** (this plan) | Ambient audio via mic burst | No |
+| **Watch Sync up** | Ambient audio via mic burst | No |
 | **Activity 2** viewer | Local video playhead | Yes |
 
-Both share the timed cue model in `src/types`. Sync up unblocks “lost my place while watching elsewhere” without waiting for easy movie-file access.
+### Implementation checklist
 
-### Implementation checklist (when we build it)
-
-- [ ] In-app text selection → local highlight store on the Work
-- [ ] Settings: Readwise access token (local only)
-- [ ] Push selected highlights via v2 API; optional “Save transcript to Reader” via v3
-- [ ] Sync up button: burst STT → fuzzy match → scroll to cue
-- [ ] Privacy copy: listening is on-demand; note cloud vs on-device STT
-- [ ] Prefer separate “watch mode” UI so import/search stays uncluttered
+- [x] Watch mode UI (separate from Work generate/export)
+- [x] In-app text selection → local highlight store on the Work
+- [x] Readwise access token (localStorage)
+- [x] Push highlights via v2 API
+- [ ] Optional: Save transcript to Reader via v3
+- [x] Sync up button: burst STT → fuzzy match → scroll
+- [x] Privacy copy: listening is on-demand; note cloud vs on-device STT
 
 ---
 
@@ -145,8 +109,8 @@ Both share the timed cue model in `src/types`. Sync up unblocks “lost my place
 | Idea | Where | Effort / value |
 | --- | --- | --- |
 | Standalone HTML build | Same repo; `npm run build:single` | Done — Find film disabled offline |
-| In-app highlight + Readwise push | Same app or thin companion | Unlocks highlighting without MD round-trip |
-| Sync up (mic burst) | Companion / watch mode | Solves lost place without movie file |
+| Watch mode + Readwise push | Same app; WatchScreen | Done (Reader v3 save later) |
+| Sync up (mic burst) | WatchScreen | Done — iterate on match quality |
 | Activity 2 video sync | Later, when files are easy | Precise sync when media is in-browser |
 
 ---
@@ -157,12 +121,11 @@ Both share the timed cue model in `src/types`. Sync up unblocks “lost my place
 Now
   Local app + MD export to Readwise
   Part A — build:single (import / generate / export only)  [done]
+  Part B — Watch mode: highlights, Readwise push, Sync up  [done]
 
-When highlighting-in-place matters
-  Part B1 — in-app highlights + Readwise / Reader push
-
-When watching elsewhere and losing place
-  Part B2 — Sync up burst mic match
+Later polish
+  Reader v3 save full transcript
+  Sync up matching quality
 
 When movie files are easy
   Activity 2 — video + transcript playhead sync

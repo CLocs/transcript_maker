@@ -15,9 +15,10 @@ type Props = {
   workId: string;
   onBack: () => void;
   onMissing: () => void;
+  onWatch: () => void;
 };
 
-export function WorkScreen({ workId, onBack, onMissing }: Props) {
+export function WorkScreen({ workId, onBack, onMissing, onWatch }: Props) {
   const [work, setWork] = useState<Work | null>(null);
   const [options, setOptions] = useState<CleanOptions>(defaultCleanOptions);
   const [titleDraft, setTitleDraft] = useState("");
@@ -104,6 +105,15 @@ export function WorkScreen({ workId, onBack, onMissing }: Props) {
             onClick={() => void generate()}
           >
             Generate transcript
+          </button>
+          <button
+            type="button"
+            className="btn"
+            disabled={!transcript}
+            title={transcript ? "Read, highlight, and Sync up while watching" : "Generate a transcript first"}
+            onClick={onWatch}
+          >
+            Watch / highlight
           </button>
           <button
             type="button"

@@ -13,6 +13,7 @@ See [ROADMAP.md](ROADMAP.md) for what's planned next.
 - **Import** an SRT or VTT file you already have
 - **Find a film** and download a matching subtitle from OpenSubtitles
 - **Generate** a readable transcript from raw subtitle cues
+- **Watch / highlight** — read while watching elsewhere, Sync up via mic, push highlights to Readwise
 - **Export** Markdown (for Readwise), plain text, or timed JSON
 
 Your works are saved automatically in this browser profile. Clearing site data for this app deletes the library.
@@ -64,6 +65,7 @@ If no subtitles appear, use **Import SRT** with a file from [OpenSubtitles](http
 | --- | --- |
 | **Title** | Editable; defaults to the filename or film name |
 | **Generate transcript** | Builds the reading copy from raw cues (disabled until cues exist) |
+| **Watch / highlight** | Opens Watch mode: full transcript, highlights, Sync up, push to Readwise |
 | **Export Markdown / text / JSON** | Download files; Markdown is best for Readwise Reader |
 | **Merge continuations** | Join subtitle lines that split mid-sentence |
 | **Include SDH** | Keep stage-direction lines like `[door slams]` |
@@ -72,6 +74,17 @@ If no subtitles appear, use **Import SRT** with a file from [OpenSubtitles](http
 | **Transcript** | Reading copy; regenerate anytime after changing options |
 
 **Tip:** After changing options, click **Generate transcript** again. The raw cues stay unchanged.
+
+### Watch mode
+
+After you generate a transcript, click **Watch / highlight**.
+
+1. Read the full transcript while the movie plays elsewhere.
+2. Select text → **Save highlight**, press **Ctrl+H** (⌘H on Mac), or **right-click → Highlight selection**. Highlights stay with the work in this browser.
+3. **Sync up** — listens on the mic for ~10 seconds, then scrolls to the best-matching line. Not continuous listening.
+4. **Push to Readwise** — paste your [access token](https://readwise.io/access_token) once (**Readwise token** → Save token). It is kept in this browser’s `localStorage` for later Watch sessions. Then push saved highlights.
+
+You can still **Export Markdown** from the work screen if you prefer importing a file into Reader.
 
 ### Exporting to Readwise
 
@@ -86,6 +99,8 @@ Speaker dashes (`- Hello`) are stripped in Markdown export so Readwise doesn't t
 - Subtitles are parsed in your browser.
 - The library lives in **IndexedDB** for this browser profile only.
 - Movie/subtitle search goes through a local proxy using your API keys; subtitle files are not uploaded to our servers (there are no servers — it's all local dev for now).
+- Readwise access token (if you use Push) stays in this browser’s `localStorage`.
+- **Sync up** uses the microphone briefly on demand; Chrome may send audio to a cloud speech service unless on-device recognition is available.
 
 ---
 
@@ -179,10 +194,12 @@ src/
   features/
     search/         Find film wizard (TMDB + OpenSubtitles)
     works/          import subtitle files
+  components/       Library, Work, Watch screens
   lib/
-    api/            calls to the proxy
+    api/            proxy + Readwise client
     subtitle/       parse SRT/VTT, clean into transcript blocks
     export/         Markdown, text, and JSON export
+    watch/          Sync up match + speech burst
   types/            shared TypeScript types
 proxy/              Cloudflare Worker — TMDB + OpenSubtitles
 docs/               API key setup, plans
