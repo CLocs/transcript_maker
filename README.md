@@ -98,8 +98,11 @@ Speaker dashes (`- Hello`) are stripped in Markdown export so Readwise doesn't t
 
 ### Install
 
-```bash
+```shell
 npm install
+```
+
+```shell
 cd proxy && npm install && cd ..
 ```
 
@@ -107,44 +110,51 @@ cd proxy && npm install && cd ..
 
 Movie search and subtitle download need keys in `proxy/.dev.vars`. Step-by-step setup: [docs/API-KEYS.md](docs/API-KEYS.md).
 
-```bash
+```shell
 cd proxy
 cp .dev.vars.example .dev.vars
-# Edit .dev.vars — at minimum:
-#   TMDB_API_KEY=...
-#   OPENSUBTITLES_API_KEY=...
-#   OPENSUBTITLES_USERNAME=...   # required for subtitle download
-#   OPENSUBTITLES_PASSWORD=...
 ```
 
-Restart the proxy after editing `.dev.vars`.
+Edit `proxy/.dev.vars` — at minimum set `TMDB_API_KEY`, `OPENSUBTITLES_API_KEY`, `OPENSUBTITLES_USERNAME`, and `OPENSUBTITLES_PASSWORD`. Restart the proxy after editing.
 
 ### Run locally
 
-**Recommended — one command:**
+Starts the API proxy and the Vite app together. Use this for day-to-day work (including **Find film**).
 
-```bash
+```shell
 npm run dev:all
 ```
 
+Open the URL Vite prints (usually `http://localhost:5173`). Use Chrome, not the Cursor embedded browser.
+
 **Or two terminals** (both must stay running):
 
-```bash
-# Terminal 1 — API proxy (port 8787)
+```shell
 npm run dev:proxy
+```
 
-# Terminal 2 — app
+```shell
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`).
-
-**Sanity checks** (use Chrome, not the Cursor embedded browser):
+**Sanity checks:**
 
 - `http://localhost:8787/api/health` → `{"ok":true,"tmdb":true,"opensubtitles":{...}}`
 - `http://localhost:5173/api/health` → same JSON (confirms Vite proxy is active)
 
 If search fails with `ECONNREFUSED 127.0.0.1:8787`, the proxy isn't running. If you get HTML instead of JSON on port 5173, restart the Vite dev server. See troubleshooting in [docs/API-KEYS.md](docs/API-KEYS.md).
+
+### Portable single-file build
+
+Build one self-contained HTML file you can open without a server — useful for Dropbox, USB, or sharing without hosting. Covers **Import SRT**, generate transcript, and export. **Find film** stays disabled (it needs the local proxy).
+
+```shell
+npm run build:single
+```
+
+Then open `dist/index.html` in your browser (double-click or File → Open).
+
+Keep the file path stable: IndexedDB is tied to the `file://` origin, so moving or renaming the HTML can look like a fresh install with an empty library. Details: [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
 
 ### Scripts
 
@@ -154,6 +164,7 @@ If search fails with `ECONNREFUSED 127.0.0.1:8787`, the proxy isn't running. If 
 | `npm run dev` | Start the Vite dev server only |
 | `npm run dev:proxy` | Start the API proxy only |
 | `npm run build` | Typecheck and build static files to `dist/` |
+| `npm run build:single` | One self-contained `dist/index.html` for `file://` (no Find film) |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run unit tests |
 | `npm run test:watch` | Run tests in watch mode |
@@ -181,6 +192,12 @@ More detail: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### Deploy
 
-`npm run build` produces a static site in `dist/`. Deploy the `proxy/` worker separately (e.g. Cloudflare Workers) and set `VITE_API_BASE_URL` to its URL at build time.
+```shell
+npm run build
+```
+
+That produces a multi-file static site in `dist/` (for hosting). Deploy the `proxy/` worker separately (e.g. Cloudflare Workers) and set `VITE_API_BASE_URL` to its URL at build time. For a no-host portable file, use [Portable single-file build](#portable-single-file-build) instead.
 
 Phased plan and security notes: [docs/PLAN-deployment.md](docs/PLAN-deployment.md).
+
+Portable HTML, in-app highlights → Readwise, and mic **Sync up**: [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).

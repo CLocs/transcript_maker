@@ -2,7 +2,7 @@
 
 How to host Transcript Maker when we're ready. **Not started** — local dev (`npm run dev:all`) is the supported path today.
 
-See also: [ARCHITECTURE.md](../ARCHITECTURE.md), [API-KEYS.md](API-KEYS.md), [README.md](../README.md#deploy).
+See also: [ARCHITECTURE.md](../ARCHITECTURE.md), [API-KEYS.md](API-KEYS.md), [README.md](../README.md#deploy), [PLAN-companion-and-portable.md](PLAN-companion-and-portable.md) (Phase 0.5 single-file HTML).
 
 ---
 
@@ -64,6 +64,12 @@ vidstamp's frontend pattern (`npm run deploy` → `vite build && wrangler deploy
 - No production URLs, no abuse surface
 
 **Done when:** personal workflow is stable (already true).
+
+### Phase 0.5 — Portable single-file HTML *(done)*
+
+`npm run build:single` → one `dist/index.html` for `file://`. Import / generate / export work; Find film is disabled.
+
+Details: [PLAN-companion-and-portable.md](PLAN-companion-and-portable.md).
 
 ### Phase 1 — Frontend only (low risk)
 
@@ -181,6 +187,9 @@ Same four keys as `.dev.vars`, set via `wrangler secret put`. Optional: `ALLOWED
 ```
 Now
   Local dev only — npm run dev:all
+
+Optional portability (no host)
+  Phase 0.5 — build:single HTML — see PLAN-companion-and-portable.md
 
 When we want a bookmarkable URL
   Phase 1 — static app on Cloudflare (import + transcript only)

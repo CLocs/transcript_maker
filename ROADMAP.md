@@ -91,10 +91,11 @@ A clear action: **"Generate transcript from subtitles."**
 
 Once a clean transcript exists, import it into a highlighting app.
 
-- Export a Readwise-friendly document (Reader article, Markdown, or API highlights — whichever is least fiddly).
+- Export a Readwise-friendly document (Reader article, Markdown, or API highlights — whichever is least fiddly). **Current path:** download Markdown and paste/import into Reader.
+- Later: highlight in-app and push via Readwise / Reader API; optional **Sync up** (mic burst) to find your place while watching elsewhere — see [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
 - Preserve enough structure (title, year, optional timestamps as comments or metadata) that excerpts stay attributable to the film.
 
-This is the highlighting MVP. Native highlighting waits for Activity 2.
+This is the highlighting MVP. Native video-synced highlighting waits for Activity 2; ambient Sync up does not need a movie file.
 
 ---
 
@@ -146,6 +147,12 @@ Now
   Activity 1.3  Generate clean transcript           [done]
   Follow-on     Export to Readwise                  [files you can paste; no API yet]
 
+Optional (no movie file required)
+  Portable     Single-file HTML build              [done — npm run build:single]
+  Companion    In-app highlights → Readwise / Reader API
+  Companion    Sync up — mic burst to locate place in transcript
+               → docs/PLAN-companion-and-portable.md
+
 When movie files are easy
   Activity 2    Synced video + transcript viewer
                 Clips from transcript ranges
@@ -175,6 +182,7 @@ Anytime after 1.3 / when video exists
 - **SDH default:** Include stage directions, with a generate-time toggle to drop them.
 - **Scene breaks:** Time-gap threshold (`gapMsForParagraph`, default 1500ms) prevents merging across pauses. No named scenes until we have chapter metadata.
 - **Subtitle search legality and TOS:** which index (if any) we're willing to call; whether search is "open this URL" vs. in-app download. Blocked in-browser by CORS for now.
-- **Readwise path:** Reader import vs. highlight API vs. "copy Markdown and paste." Current path: download Markdown.
+- **Readwise path:** Reader import vs. highlight API vs. "copy Markdown and paste." Current path: download Markdown. Planned upgrade: in-app highlight + API push; see [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
+- **Portable HTML:** single-file build for Miles-style no-host distribution (Find film excluded); same plan doc.
 - **Person identity:** Google Contacts as source of truth, or our own list that can *link* to a contact?
 - **tk421 fidelity:** full scene pages with many stills, or a sparser "keyframe per beat" illustrated export?

@@ -8,6 +8,7 @@
     "dev:proxy": "npm run dev --prefix proxy",
     "dev:all": "concurrently -n proxy,app -c yellow,cyan \"npm run dev:proxy\" \"npm run dev\"",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
+    "build:single": "tsc --noEmit -p tsconfig.app.json && vite build --config vite.single.config.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -24,6 +25,7 @@
     "concurrently": "^9.2.1",
     "typescript": "~5.9.2",
     "vite": "^7.1.5",
+    "vite-plugin-singlefile": "^2.3.3",
     "vitest": "^3.2.4"
   }
 }
