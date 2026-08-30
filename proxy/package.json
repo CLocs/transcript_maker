@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "predev": "node scripts/cleanup-dev.mjs",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --config wrangler.toml",
     "deploy": "wrangler deploy",
     "test": "vitest run"
   },

@@ -1,22 +1,6 @@
-import { execSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const PORT = 8787;
-
-try {
-  execSync(`npx kill-port ${PORT}`, { stdio: "inherit", shell: true });
-} catch {
-  // Port may already be free.
-}
-
-if (process.platform === "win32") {
-  try {
-    const output = execSync('tasklist /FI "IMAGENAME eq workerd.exe" /FO CSV /NH', {
-      encoding: "utf8",
-    });
-    if (output.includes("workerd.exe")) {
-      execSync("taskkill /F /IM workerd.exe", { stdio: "inherit" });
-    }
-  } catch {
-    // No workerd processes left.
-  }
-}
+const rootCleanup = resolve(dirname(fileURLToPath(import.meta.url)), "../../scripts/cleanup-dev.mjs");
+await import(pathToFileURL(rootCleanup).href);

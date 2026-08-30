@@ -24,8 +24,11 @@ export function useApiAvailability(): ApiAvailability {
     }
 
     let cancelled = false;
-    void checkApiHealth()
-      .then((health) => {
+
+    async function probeWithRetry(attempt = 0): Promise<void> {
+      const maxAttempts = 8;
+      try {
+        const health = await checkApiHealth();
         if (cancelled) return;
         if (health.ok && health.tmdb) {
           setState({ status: "available" });
@@ -36,15 +39,25 @@ export function useApiAvailability(): ApiAvailability {
           reason:
             "Movie search is not configured. Start the proxy with API keys, or import an SRT file.",
         });
-      })
-      .catch(() => {
+      } catch (err) {
         if (cancelled) return;
+        if (attempt < maxAttempts - 1) {
+          await new Promise((r) => setTimeout(r, 1000));
+          if (!cancelled) await probeWithRetry(attempt + 1);
+          return;
+        }
+        const hint =
+          err instanceof Error && err.message.includes("API proxy")
+            ? err.message
+            : "API proxy is not reachable. Run npm run dev:all for Find film, or import an SRT file.";
         setState({
           status: "unavailable",
-          reason:
-            "API proxy is not reachable. Run npm run dev:all for Find film, or import an SRT file.",
+          reason: hint,
         });
-      });
+      }
+    }
+
+    void probeWithRetry();
 
     return () => {
       cancelled = true;

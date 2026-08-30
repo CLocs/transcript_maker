@@ -2,6 +2,8 @@
 
 Turn movie subtitles into a clean, readable transcript you can highlight and export. Everything runs in your browser; your library stays on your machine.
 
+**Live app (Phase 1):** [transcript-maker.dascolin.workers.dev](https://transcript-maker.dascolin.workers.dev) — import, generate, Watch mode, and export. **Find film** needs local dev (`npm run dev:all`) until the API proxy is deployed.
+
 See [ROADMAP.md](ROADMAP.md) for what's planned next.
 
 ---
@@ -140,7 +142,7 @@ Starts the API proxy and the Vite app together. Use this for day-to-day work (in
 npm run dev:all
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`). Use Chrome, not the Cursor embedded browser.
+Open the URL Vite prints (usually `http://localhost:5173`). **Do not open port 8787 in the browser** — that is the API only; the app UI lives on Vite’s port. Use Chrome, not the Cursor embedded browser.
 
 **Or two terminals** (both must stay running):
 
@@ -157,7 +159,7 @@ npm run dev
 - `http://localhost:8787/api/health` → `{"ok":true,"tmdb":true,"opensubtitles":{...}}`
 - `http://localhost:5173/api/health` → same JSON (confirms Vite proxy is active)
 
-If search fails with `ECONNREFUSED 127.0.0.1:8787`, the proxy isn't running. If you get HTML instead of JSON on port 5173, restart the Vite dev server. See troubleshooting in [docs/API-KEYS.md](docs/API-KEYS.md).
+If search fails with `ECONNREFUSED 127.0.0.1:8787`, the proxy isn't running. If **Find film** stays disabled, stop every `dev:all` terminal in every Cursor window, run `npm run dev:kill`, then `npm run dev:all` once. Other Vite apps may take port 5173 — that's fine; use the port Vite prints (e.g. 5174). See [docs/API-KEYS.md](docs/API-KEYS.md).
 
 ### Portable single-file build
 
@@ -176,11 +178,14 @@ Keep the file path stable: IndexedDB is tied to the `file://` origin, so moving 
 | Command | What it does |
 | --- | --- |
 | `npm run dev:all` | Start proxy + app together (recommended) |
+| `npm run dev:kill` | Free port 8787 if a stale proxy is stuck |
 | `npm run dev` | Start the Vite dev server only |
 | `npm run dev:proxy` | Start the API proxy only |
 | `npm run build` | Typecheck and build static files to `dist/` |
 | `npm run build:single` | One self-contained `dist/index.html` for `file://` (no Find film) |
 | `npm run preview` | Serve the production build locally |
+| `npm run preview:cloudflare` | Build and serve via Wrangler (production-like) |
+| `npm run deploy` | Build and deploy app to Cloudflare (Phase 1) |
 | `npm test` | Run unit tests |
 | `npm run test:watch` | Run tests in watch mode |
 
@@ -209,12 +214,23 @@ More detail: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### Deploy
 
+**Live:** [https://transcript-maker.dascolin.workers.dev](https://transcript-maker.dascolin.workers.dev)
+
+**Phase 1 (Cloudflare Workers)** — static app only; Find film stays local until Phase 2.
+
 ```shell
-npm run build
+npx wrangler login
 ```
 
-That produces a multi-file static site in `dist/` (for hosting). Deploy the `proxy/` worker separately (e.g. Cloudflare Workers) and set `VITE_API_BASE_URL` to its URL at build time. For a no-host portable file, use [Portable single-file build](#portable-single-file-build) instead.
+```shell
+npm run deploy
+```
 
-Phased plan and security notes: [docs/PLAN-deployment.md](docs/PLAN-deployment.md).
+Step-by-step: [docs/DEPLOY-CLOUDFLARE.md](docs/DEPLOY-CLOUDFLARE.md). Phased plan (Phase 2 proxy later): [docs/PLAN-deployment.md](docs/PLAN-deployment.md).
 
-Portable HTML, in-app highlights → Readwise, and mic **Sync up**: [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
+**Other options:**
+
+- **Portable HTML** — [Portable single-file build](#portable-single-file-build) (`npm run build:single`), no host
+- **Local only** — `npm run dev:all` (includes Find film via proxy)
+
+Portable HTML, Watch mode, and mic **Sync up**: [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).

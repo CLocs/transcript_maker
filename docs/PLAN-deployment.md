@@ -71,20 +71,22 @@ vidstamp's frontend pattern (`npm run deploy` → `vite build && wrangler deploy
 
 Details: [PLAN-companion-and-portable.md](PLAN-companion-and-portable.md).
 
-### Phase 1 — Frontend only (low risk)
+### Phase 1 — Frontend on Cloudflare *(ready)*
 
 Deploy the static app without the proxy.
 
 | Works | Doesn't work |
 | --- | --- |
-| Import SRT, generate transcript, export | Find film (no API proxy) |
+| Import SRT, generate transcript, Watch mode, export, Readwise push | Find film (no API proxy) |
 
-**Steps (sketch):**
+**Deploy:**
 
-1. Add `@cloudflare/vite-plugin` to root `vite.config.ts` (mirror vidstamp), or use Cloudflare Pages with `npm run build` → `dist/`.
-2. Add root `wrangler.jsonc` with SPA fallback (`not_found_handling: "single-page-application"`).
-3. `npm run build && wrangler deploy` (or Git-connected auto-deploy).
-4. Do **not** set `VITE_API_BASE_URL` — app calls relative `/api` paths; without a proxy those routes 404. UI should degrade gracefully (Find film shows a clear error) or we hide **Find film** when health check fails.
+```shell
+npx wrangler login
+npm run deploy
+```
+
+Details: [DEPLOY-CLOUDFLARE.md](DEPLOY-CLOUDFLARE.md).
 
 **Risk:** Very low. No secrets in the bundle.
 
@@ -130,12 +132,12 @@ Deploy `proxy/` for **Find film**, locked to personal use.
 
 When we pick up deployment work:
 
-- [ ] Root: `@cloudflare/vite-plugin`, `wrangler.jsonc`, `deploy` script
-- [ ] `proxy/src/cors.ts` — production origin(s) from env or Wrangler var
-- [ ] `proxy/src/index.ts` — optional auth middleware (API key header or validate CF Access JWT)
-- [ ] App: graceful **Find film** when `/api/health` fails (or feature flag)
-- [ ] Docs: production env vars table in this file + `API-KEYS.md` cross-link
-- [ ] `ROADMAP.md` — mark deploy phase when complete
+- [x] Root: `@cloudflare/vite-plugin`, `wrangler.jsonc`, `deploy` script
+- [x] App: graceful **Find film** when `/api/health` fails
+- [x] Docs: [DEPLOY-CLOUDFLARE.md](DEPLOY-CLOUDFLARE.md)
+- [ ] `proxy/src/cors.ts` — production origin(s) from env or Wrangler var (Phase 2)
+- [ ] `proxy/src/index.ts` — optional auth middleware (Phase 2)
+- [ ] Docs: production env vars table in API-KEYS cross-link (Phase 2)
 
 ---
 
