@@ -1,10 +1,14 @@
 import { useCallback, useRef, useState } from "react";
 import { LibraryScreen } from "../components/LibraryScreen";
+import { WatchScreen } from "../components/WatchScreen";
 import { WorkScreen } from "../components/WorkScreen";
 import { SearchWizard } from "../features/search/SearchWizard";
 import { importSubtitleFile } from "../features/works/importWork";
 
+type View = "library" | "work" | "watch";
+
 export default function App() {
+  const [view, setView] = useState<View>("library");
   const [workId, setWorkId] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -17,7 +21,13 @@ export default function App() {
 
   const goLibrary = useCallback(() => {
     setWorkId(null);
+    setView("library");
     setShowSearch(false);
+  }, []);
+
+  const openWork = useCallback((id: string) => {
+    setWorkId(id);
+    setView("work");
   }, []);
 
   const refreshLibrary = useCallback(() => {
@@ -39,21 +49,32 @@ export default function App() {
           try {
             const id = await importSubtitleFile(file);
             refreshLibrary();
-            setWorkId(id);
+            openWork(id);
           } catch (err) {
             setImportError(err instanceof Error ? err.message : "Could not import that file.");
           }
         }}
       />
-      {workId ? (
-        <WorkScreen workId={workId} onBack={goLibrary} onMissing={goLibrary} />
+      {view === "watch" && workId ? (
+        <WatchScreen
+          workId={workId}
+          onBack={() => setView("work")}
+          onMissing={goLibrary}
+        />
+      ) : view === "work" && workId ? (
+        <WorkScreen
+          workId={workId}
+          onBack={goLibrary}
+          onMissing={goLibrary}
+          onWatch={() => setView("watch")}
+        />
       ) : (
         <LibraryScreen
           importNonce={importNonce}
           importError={importError}
           onImport={openPicker}
           onFindSubtitles={() => setShowSearch(true)}
-          onOpen={setWorkId}
+          onOpen={openWork}
         />
       )}
       {showSearch ? (
@@ -62,7 +83,7 @@ export default function App() {
           onFilmSelected={(id) => {
             refreshLibrary();
             setShowSearch(false);
-            setWorkId(id);
+            openWork(id);
           }}
         />
       ) : null}

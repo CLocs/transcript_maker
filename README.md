@@ -2,6 +2,8 @@
 
 Turn movie subtitles into a clean, readable transcript you can highlight and export. Everything runs in your browser; your library stays on your machine.
 
+**Live app (Phase 1):** [transcript-maker.dascolin.workers.dev](https://transcript-maker.dascolin.workers.dev) — import, generate, Watch mode, and export. **Find film** needs local dev (`npm run dev:all`) until the API proxy is deployed.
+
 See [ROADMAP.md](ROADMAP.md) for what's planned next.
 
 ---
@@ -13,6 +15,7 @@ See [ROADMAP.md](ROADMAP.md) for what's planned next.
 - **Import** an SRT or VTT file you already have
 - **Find a film** and download a matching subtitle from OpenSubtitles
 - **Generate** a readable transcript from raw subtitle cues
+- **Watch / highlight** — read while watching elsewhere, Sync up via mic, push highlights to Readwise
 - **Export** Markdown (for Readwise), plain text, or timed JSON
 
 Your works are saved automatically in this browser profile. Clearing site data for this app deletes the library.
@@ -64,6 +67,7 @@ If no subtitles appear, use **Import SRT** with a file from [OpenSubtitles](http
 | --- | --- |
 | **Title** | Editable; defaults to the filename or film name |
 | **Generate transcript** | Builds the reading copy from raw cues (disabled until cues exist) |
+| **Watch / highlight** | Opens Watch mode: full transcript, highlights, Sync up, push to Readwise |
 | **Export Markdown / text / JSON** | Download files; Markdown is best for Readwise Reader |
 | **Merge continuations** | Join subtitle lines that split mid-sentence |
 | **Include SDH** | Keep stage-direction lines like `[door slams]` |
@@ -72,6 +76,17 @@ If no subtitles appear, use **Import SRT** with a file from [OpenSubtitles](http
 | **Transcript** | Reading copy; regenerate anytime after changing options |
 
 **Tip:** After changing options, click **Generate transcript** again. The raw cues stay unchanged.
+
+### Watch mode
+
+After you generate a transcript, click **Watch / highlight**.
+
+1. Read the full transcript while the movie plays elsewhere.
+2. Select text → **Save highlight**, press **Ctrl+H** (⌘H on Mac), or **right-click → Highlight selection**. Highlights stay with the work in this browser.
+3. **Sync up** — listens on the mic for ~10 seconds, then scrolls to the best-matching line. Not continuous listening.
+4. **Push to Readwise** — paste your [access token](https://readwise.io/access_token) once (**Readwise token** → Save token). It is kept in this browser’s `localStorage` for later Watch sessions. Then push saved highlights; they show up in your [Readwise library](https://readwise.io/library) (classic highlights / review — not [Readwise Reader](https://readwise.io/read)).
+
+You can still **Export Markdown** from the work screen if you prefer importing a file into Reader.
 
 ### Exporting to Readwise
 
@@ -86,6 +101,8 @@ Speaker dashes (`- Hello`) are stripped in Markdown export so Readwise doesn't t
 - Subtitles are parsed in your browser.
 - The library lives in **IndexedDB** for this browser profile only.
 - Movie/subtitle search goes through a local proxy using your API keys; subtitle files are not uploaded to our servers (there are no servers — it's all local dev for now).
+- Readwise access token (if you use Push) stays in this browser’s `localStorage`.
+- **Sync up** uses the microphone briefly on demand; Chrome may send audio to a cloud speech service unless on-device recognition is available.
 
 ---
 
@@ -98,8 +115,11 @@ Speaker dashes (`- Hello`) are stripped in Markdown export so Readwise doesn't t
 
 ### Install
 
-```bash
+```shell
 npm install
+```
+
+```shell
 cd proxy && npm install && cd ..
 ```
 
@@ -107,54 +127,65 @@ cd proxy && npm install && cd ..
 
 Movie search and subtitle download need keys in `proxy/.dev.vars`. Step-by-step setup: [docs/API-KEYS.md](docs/API-KEYS.md).
 
-```bash
+```shell
 cd proxy
 cp .dev.vars.example .dev.vars
-# Edit .dev.vars — at minimum:
-#   TMDB_API_KEY=...
-#   OPENSUBTITLES_API_KEY=...
-#   OPENSUBTITLES_USERNAME=...   # required for subtitle download
-#   OPENSUBTITLES_PASSWORD=...
 ```
 
-Restart the proxy after editing `.dev.vars`.
+Edit `proxy/.dev.vars` — at minimum set `TMDB_API_KEY`, `OPENSUBTITLES_API_KEY`, `OPENSUBTITLES_USERNAME`, and `OPENSUBTITLES_PASSWORD`. Restart the proxy after editing.
 
 ### Run locally
 
-**Recommended — one command:**
+Starts the API proxy and the Vite app together. Use this for day-to-day work (including **Find film**).
 
-```bash
+```shell
 npm run dev:all
 ```
 
+Open the URL Vite prints (usually `http://localhost:5173`). **Do not open port 8787 in the browser** — that is the API only; the app UI lives on Vite’s port. Use Chrome, not the Cursor embedded browser.
+
 **Or two terminals** (both must stay running):
 
-```bash
-# Terminal 1 — API proxy (port 8787)
+```shell
 npm run dev:proxy
+```
 
-# Terminal 2 — app
+```shell
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`).
-
-**Sanity checks** (use Chrome, not the Cursor embedded browser):
+**Sanity checks:**
 
 - `http://localhost:8787/api/health` → `{"ok":true,"tmdb":true,"opensubtitles":{...}}`
 - `http://localhost:5173/api/health` → same JSON (confirms Vite proxy is active)
 
-If search fails with `ECONNREFUSED 127.0.0.1:8787`, the proxy isn't running. If you get HTML instead of JSON on port 5173, restart the Vite dev server. See troubleshooting in [docs/API-KEYS.md](docs/API-KEYS.md).
+If search fails with `ECONNREFUSED 127.0.0.1:8787`, the proxy isn't running. If **Find film** stays disabled, stop every `dev:all` terminal in every Cursor window, run `npm run dev:kill`, then `npm run dev:all` once. Other Vite apps may take port 5173 — that's fine; use the port Vite prints (e.g. 5174). See [docs/API-KEYS.md](docs/API-KEYS.md).
+
+### Portable single-file build
+
+Build one self-contained HTML file you can open without a server — useful for Dropbox, USB, or sharing without hosting. Covers **Import SRT**, generate transcript, and export. **Find film** stays disabled (it needs the local proxy).
+
+```shell
+npm run build:single
+```
+
+Then open `dist/index.html` in your browser (double-click or File → Open).
+
+Keep the file path stable: IndexedDB is tied to the `file://` origin, so moving or renaming the HTML can look like a fresh install with an empty library. Details: [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
 
 ### Scripts
 
 | Command | What it does |
 | --- | --- |
 | `npm run dev:all` | Start proxy + app together (recommended) |
+| `npm run dev:kill` | Free port 8787 if a stale proxy is stuck |
 | `npm run dev` | Start the Vite dev server only |
 | `npm run dev:proxy` | Start the API proxy only |
 | `npm run build` | Typecheck and build static files to `dist/` |
+| `npm run build:single` | One self-contained `dist/index.html` for `file://` (no Find film) |
 | `npm run preview` | Serve the production build locally |
+| `npm run preview:cloudflare` | Build and serve via Wrangler (production-like) |
+| `npm run deploy` | Build and deploy app to Cloudflare (Phase 1) |
 | `npm test` | Run unit tests |
 | `npm run test:watch` | Run tests in watch mode |
 
@@ -168,10 +199,12 @@ src/
   features/
     search/         Find film wizard (TMDB + OpenSubtitles)
     works/          import subtitle files
+  components/       Library, Work, Watch screens
   lib/
-    api/            calls to the proxy
+    api/            proxy + Readwise client
     subtitle/       parse SRT/VTT, clean into transcript blocks
     export/         Markdown, text, and JSON export
+    watch/          Sync up match + speech burst
   types/            shared TypeScript types
 proxy/              Cloudflare Worker — TMDB + OpenSubtitles
 docs/               API key setup, plans
@@ -181,6 +214,23 @@ More detail: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### Deploy
 
-`npm run build` produces a static site in `dist/`. Deploy the `proxy/` worker separately (e.g. Cloudflare Workers) and set `VITE_API_BASE_URL` to its URL at build time.
+**Live:** [https://transcript-maker.dascolin.workers.dev](https://transcript-maker.dascolin.workers.dev)
 
-Phased plan and security notes: [docs/PLAN-deployment.md](docs/PLAN-deployment.md).
+**Phase 1 (Cloudflare Workers)** — static app only; Find film stays local until Phase 2.
+
+```shell
+npx wrangler login
+```
+
+```shell
+npm run deploy
+```
+
+Step-by-step: [docs/DEPLOY-CLOUDFLARE.md](docs/DEPLOY-CLOUDFLARE.md). Phased plan (Phase 2 proxy later): [docs/PLAN-deployment.md](docs/PLAN-deployment.md).
+
+**Other options:**
+
+- **Portable HTML** — [Portable single-file build](#portable-single-file-build) (`npm run build:single`), no host
+- **Local only** — `npm run dev:all` (includes Find film via proxy)
+
+Portable HTML, Watch mode, and mic **Sync up**: [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).

@@ -5,10 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:kill": "node scripts/cleanup-dev.mjs",
     "dev:proxy": "npm run dev --prefix proxy",
-    "dev:all": "concurrently -n proxy,app -c yellow,cyan \"npm run dev:proxy\" \"npm run dev\"",
+    "predev:all": "node scripts/cleanup-dev.mjs",
+    "dev:all": "concurrently -n proxy,app -c yellow,cyan \"npm run dev:proxy\" \"npx wait-on http://127.0.0.1:8787/api/health -t 120000 && npm run dev\"",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
+    "build:single": "tsc --noEmit -p tsconfig.app.json && vite build --config vite.single.config.ts",
     "preview": "vite preview",
+    "preview:cloudflare": "tsc --noEmit -p tsconfig.app.json && vite build && wrangler dev",
+    "deploy": "tsc --noEmit -p tsconfig.app.json && vite build && wrangler deploy",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -18,12 +23,16 @@
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.54.2",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.2",
     "concurrently": "^9.2.1",
     "typescript": "~5.9.2",
     "vite": "^7.1.5",
-    "vitest": "^3.2.4"
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^3.2.4",
+    "wait-on": "^8.0.5",
+    "wrangler": "^4.127.1"
   }
 }

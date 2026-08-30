@@ -89,12 +89,13 @@ A clear action: **"Generate transcript from subtitles."**
 
 ### Activity 1 follow-on — Readwise (Highlighting Phase 1)
 
-Once a clean transcript exists, import it into a highlighting app.
+Once a clean transcript exists, highlight and sync without needing the movie file in-app.
 
-- Export a Readwise-friendly document (Reader article, Markdown, or API highlights — whichever is least fiddly).
-- Preserve enough structure (title, year, optional timestamps as comments or metadata) that excerpts stay attributable to the film.
+- **Done:** Watch mode — in-app highlights, push via Readwise API v2, **Sync up** (mic burst). See [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
+- **Still available:** Export Markdown and paste/import into Reader.
+- Preserve enough structure (title, year, optional timestamps) that excerpts stay attributable to the film.
 
-This is the highlighting MVP. Native highlighting waits for Activity 2.
+Native video-synced highlighting waits for Activity 2; ambient Sync up does not need a movie file.
 
 ---
 
@@ -144,7 +145,10 @@ Now
   Activity 1.1  Import SRT, parse cues              [done]
   Activity 1.2  Movie + SRT search                  [done — TMDB + OpenSubtitles via proxy]
   Activity 1.3  Generate clean transcript           [done]
-  Follow-on     Export to Readwise                  [files you can paste; no API yet]
+  Follow-on     Export to Readwise                  [MD export + Watch push via API]
+  Portable     Single-file HTML build              [done — npm run build:single]
+  Watch mode   Highlights + Readwise push + Sync up [done]
+               → docs/PLAN-companion-and-portable.md
 
 When movie files are easy
   Activity 2    Synced video + transcript viewer
@@ -175,6 +179,7 @@ Anytime after 1.3 / when video exists
 - **SDH default:** Include stage directions, with a generate-time toggle to drop them.
 - **Scene breaks:** Time-gap threshold (`gapMsForParagraph`, default 1500ms) prevents merging across pauses. No named scenes until we have chapter metadata.
 - **Subtitle search legality and TOS:** which index (if any) we're willing to call; whether search is "open this URL" vs. in-app download. Blocked in-browser by CORS for now.
-- **Readwise path:** Reader import vs. highlight API vs. "copy Markdown and paste." Current path: download Markdown.
+- **Readwise path:** Watch mode push via API + Markdown export. See [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
+- **Portable HTML:** single-file build for Miles-style no-host distribution (Find film excluded); same plan doc.
 - **Person identity:** Google Contacts as source of truth, or our own list that can *link* to a contact?
 - **tk421 fidelity:** full scene pages with many stills, or a sparser "keyframe per beat" illustrated export?

@@ -99,6 +99,16 @@ Usually **multiple proxy processes** are bound to port 8787 (old Wrangler/`worke
 5. Confirm startup shows `Using secrets defined in .dev.vars` and `env.TMDB_API_KEY ("(hidden)")`.
 6. Reload `http://localhost:8787/api/health` — should show `{"ok":true,"tmdb":true}`.
 
+### "Find film" disabled after `npm run deploy`
+
+`wrangler deploy` from the repo root can leave port 8787 serving the **static app** instead of the API proxy. Restart local dev:
+
+1. Stop `npm run dev:all` (Ctrl+C).
+2. `taskkill /F /IM workerd.exe` (optional, if port stuck).
+3. `npm run dev:all` again.
+4. Open the **Vite** URL (e.g. `http://localhost:5173`), not `http://127.0.0.1:8787`.
+5. Proxy log should show `Using secrets defined in .dev.vars`, not `dist\wrangler.json`.
+
 ### "Could not search movies" / API proxy not active in the app
 
 The proxy on 8787 can work while the **Vite dev server** still serves the app HTML for `/api/*` (stale Vite process from before the proxy was configured).

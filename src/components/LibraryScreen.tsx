@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../db";
+import { useApiAvailability } from "../features/search/useApiAvailability";
 import type { Work } from "../types";
 
 type Props = {
@@ -25,6 +26,14 @@ export function LibraryScreen({
   onOpen,
 }: Props) {
   const [works, setWorks] = useState<Work[]>([]);
+  const api = useApiAvailability();
+  const findFilmDisabled = api.status !== "available";
+  const findFilmTitle =
+    api.status === "unavailable"
+      ? api.reason
+      : api.status === "checking"
+        ? "Checking API…"
+        : undefined;
 
   useEffect(() => {
     void db.works.orderBy("importedAt").reverse().toArray().then(setWorks);
@@ -43,10 +52,19 @@ export function LibraryScreen({
           <p className="lede">Import an SRT (or VTT) and generate a readable transcript.</p>
           <p className="storage-note">
             Everything stays in this browser profile. Clearing site data deletes the library.
+            {typeof window !== "undefined" && window.location.protocol === "file:"
+              ? " Portable HTML: keep this file in the same place — moving or renaming it can reset the library."
+              : null}
           </p>
         </div>
         <div className="row library-actions">
-          <button type="button" className="btn btn-secondary" onClick={onFindSubtitles}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onFindSubtitles}
+            disabled={findFilmDisabled}
+            title={findFilmTitle}
+          >
             Find film
           </button>
           <button type="button" className="btn" onClick={onImport}>
@@ -54,6 +72,10 @@ export function LibraryScreen({
           </button>
         </div>
       </header>
+
+      {api.status === "unavailable" ? (
+        <p className="storage-note find-film-note">{api.reason}</p>
+      ) : null}
 
       {importError ? <p className="error">{importError}</p> : null}
 

@@ -57,7 +57,6 @@ See [README.md](README.md) for setup and usage.
 
 ## Explicitly not now
 
-- Movie / SRT search (CORS on subtitle indexes) — Activity 1.2
+- Production deploy of the API proxy (see [docs/PLAN-deployment.md](docs/PLAN-deployment.md))
 - Video playback, clips, ffmpeg / stills — Activity 2
-- Readwise API (export Markdown and paste into Reader)
-- Accounts, sync, or any server
+- Accounts or multi-device sync

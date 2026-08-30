@@ -40,6 +40,18 @@ export type SubtitleSource = {
   release?: string;
 };
 
+/** User highlight saved while watching / reading a transcript. */
+export type Highlight = {
+  id: string;
+  text: string;
+  createdAt: number;
+  /** Best-matching transcript block index when known. */
+  blockIndex?: number;
+  startMs?: number;
+  note?: string;
+  pushedToReadwiseAt?: number | null;
+};
+
 export type Work = {
   id: string;
   title: string;
@@ -49,6 +61,7 @@ export type Work = {
   transcript: GeneratedTranscript | null;
   film?: FilmIdentity | null;
   subtitleSource?: SubtitleSource | null;
+  highlights?: Highlight[];
 };
 
 export const defaultCleanOptions: CleanOptions = {
