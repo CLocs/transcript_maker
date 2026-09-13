@@ -173,6 +173,16 @@ Then open `dist/index.html` in your browser (double-click or File → Open).
 
 Keep the file path stable: IndexedDB is tied to the `file://` origin, so moving or renaming the HTML can look like a fresh install with an empty library. Details: [docs/PLAN-companion-and-portable.md](docs/PLAN-companion-and-portable.md).
 
+### Batch export (for textline-nextline)
+
+Convert a folder of `.srt` / `.vtt` files to timed JSON (same shape as **Export JSON** on the Work screen). **Disc1 + Disc2** pairs are concatenated; if Disc 2’s clock restarts at `00:00`, cues are offset after Disc 1.
+
+```shell
+npm run batch:export -- ../textline-nextline/inbox/srt
+```
+
+Default output: `../textline-nextline/imports/` (or `./exports/` if that sibling folder is missing). Then in textline-nextline: `npm run import:all`.
+
 ### Scripts
 
 | Command | What it does |
@@ -188,6 +198,7 @@ Keep the file path stable: IndexedDB is tied to the `file://` origin, so moving 
 | `npm run deploy` | Build and deploy app to Cloudflare (Phase 1) |
 | `npm test` | Run unit tests |
 | `npm run test:watch` | Run tests in watch mode |
+| `npm run batch:export` | Folder of SRT/VTT → timed JSON (`--out` optional) |
 
 ### Project layout
 
