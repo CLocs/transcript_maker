@@ -40,7 +40,7 @@ export default function App() {
         ref={fileRef}
         className="visually-hidden"
         type="file"
-        accept=".srt,.vtt,text/vtt,application/x-subrip"
+        accept=".srt,.vtt,.sub,text/vtt,application/x-subrip"
         onChange={async (event) => {
           const file = event.target.files?.[0];
           event.target.value = "";

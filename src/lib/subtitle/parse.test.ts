@@ -98,4 +98,26 @@ Keep me
     expect(cues).toHaveLength(1);
     expect(cues[0]?.rawText).toBe("Keep me");
   });
+
+  it("parses SubViewer 2.0 (.sub) with [br] line breaks", () => {
+    const cues = parseSubtitle(`[INFORMATION]
+[TITLE]
+[END INFORMATION]
+[SUBTITLE]
+[COLF]&HFFFFFF,[STYLE]bd,[SIZE]24,[FONT]Tahoma
+00:00:01.06,00:00:03.27
+[ Chorus ][br]" The Simpsons "
+
+00:00:28.52,00:00:31.58
+Human roaches, feeding off[br]each other's garbage.
+`);
+    expect(cues).toHaveLength(2);
+    expect(cues[0]).toMatchObject({
+      startMs: 1060,
+      endMs: 3270,
+      rawText: '[ Chorus ]\n" The Simpsons "',
+    });
+    expect(cues[1]?.rawText).toBe("Human roaches, feeding off\neach other's garbage.");
+    expect(cues[1]?.startMs).toBe(28_520);
+  });
 });
